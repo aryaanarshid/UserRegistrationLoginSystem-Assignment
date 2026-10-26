@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="UserRegistrationLoginSystem" default="default" basedir=".">
+    <description>Builds, tests, and runs the project UserRegistrationLoginSystem.</description>
+    
+    <!-- Import NetBeans generated build script if present -->
+    <available file="nbproject/build-impl.xml" property="build-impl.present"/>
+    <import file="nbproject/build-impl.xml" optional="true"/>
+
+    <!-- Standalone / Fallback Ant targets -->
+    <target name="init">
+        <property file="nbproject/project.properties"/>
+        <mkdir dir="build/classes"/>
+        <mkdir dir="dist"/>
+    </target>
+
+    <target name="compile" depends="init" unless="build-impl.present">
+        <javac srcdir="src" destdir="build/classes" includeantruntime="false" debug="true" source="1.8" target="1.8"/>
+    </target>
+
+    <target name="jar" depends="compile" unless="build-impl.present">
+        <jar destfile="dist/UserRegistrationLoginSystem.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="userregistrationloginsystem.UserRegistrationLoginSystem"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run" depends="compile" unless="build-impl.present">
+        <java classname="userregistrationloginsystem.UserRegistrationLoginSystem" fork="true">
+            <classpath>
+                <pathelement location="build/classes"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="clean" unless="build-impl.present">
+        <delete dir="build"/>
+        <delete dir="dist"/>
+    </target>
+
+    <target name="default" depends="compile,jar" unless="build-impl.present"/>
+</project>
