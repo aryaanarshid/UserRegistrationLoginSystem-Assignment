@@ -5,12 +5,15 @@ import java.util.Scanner;
 /**
  * ============================================================================
  * Course: Fundamentals of Programming - Assignment 02
- * Project: User Registration and Login System
+ * Project: User Registration and Login System (Pure Procedural / Array-based)
  * 
  * Description:
  * A menu-driven console application in Java that allows up to 3 users to
  * register accounts with strict input validation, and log in with their
  * registered credentials.
+ * 
+ * NOTE: Implemented without any custom User class, using standard parallel 
+ * arrays and variables as per introductory programming conventions.
  * 
  * Implemented Requirements & Rules:
  * 1. Registration: Accepts Full Name, Username, Email, and Password.
@@ -21,10 +24,10 @@ import java.util.Scanner;
  *              >=1 lowercase letter, >=1 digit, and >=1 special character.
  *    - Rule 4: No field may be left empty.
  *    - Rule 5: Username must be unique (duplicate usernames rejected).
- * 3. Login: Authenticates username & password against registered accounts.
+ * 3. Login: Authenticates username & password against registered credentials.
  * 4. Authentication: Clear success and error notifications.
  * 5. Re-attempt: Allows user to retry login after an unsuccessful attempt.
- * 6. Capacity: Stores exactly up to 3 registered users in memory.
+ * 6. Capacity: Stores exactly up to 3 registered users using parallel arrays.
  * 
  * Programming Constraints Demonstrated:
  * - String methods: length(), contains(), indexOf(), equals(), isEmpty()
@@ -35,73 +38,42 @@ import java.util.Scanner;
 public class UserRegistrationLoginSystem {
 
     // ========================================================================
-    // CONSTANTS & STORAGE
+    // CONSTANTS & VARIABLES (Storage for 3 Users Without Any Custom Class)
     // ========================================================================
-    
+
     // Rule 9: Maximum number of users allowed to be stored
     private static final int MAX_USERS = 3;
 
-    // Array to hold registered User objects in memory during program execution
-    private static final User[] users = new User[MAX_USERS];
+    // Parallel arrays to store information for up to 3 users in variables
+    private static final String[] fullNames = new String[MAX_USERS];
+    private static final String[] usernames = new String[MAX_USERS];
+    private static final String[] emails = new String[MAX_USERS];
+    private static final String[] passwords = new String[MAX_USERS];
 
-    // Counter to track the current number of registered users (0 to 3)
-    private static int userCount = 0;
+    // Variable to track the current number of registered users (0 to 3)
+    private static int registeredCount = 0;
 
     // Scanner instance for reading keyboard input from the user
     private static final Scanner scanner = new Scanner(System.in);
-
-    /**
-     * Inner class representing a User entity.
-     * Encapsulates the user's registered details.
-     */
-    public static class User {
-        private final String fullName;
-        private final String username;
-        private final String email;
-        private final String password;
-
-        public User(String fullName, String username, String email, String password) {
-            this.fullName = fullName;
-            this.username = username;
-            this.email = email;
-            this.password = password;
-        }
-
-        public String getFullName() {
-            return fullName;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-    }
 
     // ========================================================================
     // MAIN ENTRY POINT
     // ========================================================================
 
     public static void main(String[] args) {
-        boolean running = true;
+        boolean isRunning = true;
 
         System.out.println("=================================================");
         System.out.println("  WELCOME TO USER REGISTRATION & LOGIN SYSTEM   ");
         System.out.println("=================================================");
 
-        // Main program loop: displays menu until the user decides to exit
-        while (running) {
+        // Main program loop: keeps displaying menu until the user chooses to exit
+        while (isRunning) {
             displayMenu();
             System.out.print("Enter your choice (1-3): ");
-            String input = scanner.nextLine().trim();
+            String choice = scanner.nextLine().trim();
 
-            switch (input) {
+            switch (choice) {
                 case "1":
                     handleRegistration();
                     break;
@@ -110,26 +82,26 @@ public class UserRegistrationLoginSystem {
                     break;
                 case "3":
                     System.out.println("\nThank you for using the system. Goodbye!");
-                    running = false;
+                    isRunning = false;
                     break;
                 default:
-                    System.out.println("\n[!] Invalid selection! Please enter 1, 2, or 3.\n");
+                    System.out.println("\n[!] Invalid choice! Please enter 1, 2, or 3.\n");
                     break;
             }
         }
 
-        // Close scanner upon exiting program
+        // Close scanner upon application termination
         scanner.close();
     }
 
     /**
-     * Displays the main menu options and current registration capacity.
+     * Displays the main menu with options and current user count.
      */
     private static void displayMenu() {
         System.out.println("\n-------------------------------------------------");
         System.out.println("                   MAIN MENU                     ");
         System.out.println("-------------------------------------------------");
-        System.out.println(" 1. Register a New Account (Slots used: " + userCount + "/" + MAX_USERS + ")");
+        System.out.println(" 1. Register a New Account (Slots used: " + registeredCount + "/" + MAX_USERS + ")");
         System.out.println(" 2. Login to Your Account");
         System.out.println(" 3. Exit Application");
         System.out.println("-------------------------------------------------");
@@ -140,70 +112,73 @@ public class UserRegistrationLoginSystem {
     // ========================================================================
 
     /**
-     * Handles the user registration workflow.
-     * Enforces capacity limit (Rule 9) and all validation rules.
+     * Handles user registration:
+     * Enforces the 3-user capacity limit and all required validation checks.
      */
     private static void handleRegistration() {
         System.out.println("\n=================================================");
         System.out.println("               USER REGISTRATION                 ");
         System.out.println("=================================================");
 
-        // Rule 9: Check if maximum capacity of 3 users has been reached
-        if (userCount >= MAX_USERS) {
+        // Rule 9: Store information of 3 users only
+        if (registeredCount >= MAX_USERS) {
             System.out.println("[!] Registration Limit Reached!");
-            System.out.println("    A maximum of " + MAX_USERS + " users can be registered in this system.");
+            System.out.println("    Maximum " + MAX_USERS + " users are already registered in the system.");
             System.out.println("    Returning to main menu...\n");
             return;
         }
 
-        // 1. Accept Full Name
+        // 1. Full Name input
         System.out.print("Enter Full Name: ");
-        String fullName = scanner.nextLine().trim();
-        // Rule 4: Field cannot be empty
-        if (fullName.isEmpty()) {
+        String enteredFullName = scanner.nextLine().trim();
+        // Rule 4: No field may be left empty (isEmpty() method)
+        if (enteredFullName.isEmpty()) {
             System.out.println("[X] Registration Failed: Full Name cannot be left empty.");
             return;
         }
 
-        // 2. Accept Username
+        // 2. Username input
         System.out.print("Enter Username (min 5 chars, no spaces): ");
-        String username = scanner.nextLine().trim();
-        // Validate username syntax rules (Rule 1 & Rule 4)
-        if (!isValidUsername(username)) {
+        String enteredUsername = scanner.nextLine().trim();
+        // Validate Username rules (Rule 1 & Rule 4)
+        if (!validateUsername(enteredUsername)) {
             return;
         }
-        // Rule 5: Check uniqueness (no duplicate usernames)
-        if (isUsernameTaken(username)) {
-            System.out.println("[X] Registration Failed: The username '" + username + "' is already registered.");
-            System.out.println("    Please choose a different, unique username.");
+        // Rule 5: Username must be unique
+        if (isUsernameAlreadyTaken(enteredUsername)) {
+            System.out.println("[X] Registration Failed: The username '" + enteredUsername + "' is already registered.");
+            System.out.println("    Please choose a unique username.");
             return;
         }
 
-        // 3. Accept Email Address
+        // 3. Email Address input
         System.out.print("Enter Email Address (e.g. user@domain.com): ");
-        String email = scanner.nextLine().trim();
-        // Validate email rules (Rule 2 & Rule 4)
-        if (!isValidEmail(email)) {
+        String enteredEmail = scanner.nextLine().trim();
+        // Validate Email rules (Rule 2 & Rule 4)
+        if (!validateEmail(enteredEmail)) {
             return;
         }
 
-        // 4. Accept Password
+        // 4. Password input
         System.out.print("Enter Password (min 8 chars, uppercase, lowercase, digit, special char): ");
-        String password = scanner.nextLine();
-        // Validate password rules (Rule 3 & Rule 4)
-        if (!isValidPassword(password)) {
+        String enteredPassword = scanner.nextLine();
+        // Validate Password rules (Rule 3 & Rule 4)
+        if (!validatePassword(enteredPassword)) {
             return;
         }
 
-        // Store user in array
-        users[userCount] = new User(fullName, username, email, password);
-        userCount++;
+        // Store user information in parallel arrays at the current index
+        fullNames[registeredCount] = enteredFullName;
+        usernames[registeredCount] = enteredUsername;
+        emails[registeredCount] = enteredEmail;
+        passwords[registeredCount] = enteredPassword;
+        registeredCount++;
 
-        // Rule 7: Clear success message
+        // Rule 7: Clear message for successful registration
         System.out.println("\n[✔] Registration Successful!");
-        System.out.println("    Welcome aboard, " + fullName + "!");
-        System.out.println("    Account created with username: " + username);
-        System.out.println("    Remaining registration slots: " + (MAX_USERS - userCount));
+        System.out.println("    Welcome aboard, " + enteredFullName + "!");
+        System.out.println("    Username registered: " + enteredUsername);
+        System.out.println("    Remaining slots: " + (MAX_USERS - registeredCount));
     }
 
     // ========================================================================
@@ -211,43 +186,43 @@ public class UserRegistrationLoginSystem {
     // ========================================================================
 
     /**
-     * Handles the user login workflow.
-     * Allows re-attempts on failure (Rule 8) and verifies credentials (Rule 6).
+     * Handles the user login process:
+     * Authenticates credentials and allows immediate re-attempt on failure.
      */
     private static void handleLogin() {
         System.out.println("\n=================================================");
         System.out.println("                   USER LOGIN                    ");
         System.out.println("=================================================");
 
-        // Verify that there is at least one registered user in the system
-        if (userCount == 0) {
-            System.out.println("[!] No registered users found in the system.");
+        // Verify if any users are registered
+        if (registeredCount == 0) {
+            System.out.println("[!] No users are currently registered in the system.");
             System.out.println("    Please register an account first from the main menu.");
             return;
         }
 
-        // Rule 8: Loop to allow the user to re-attempt login after an unsuccessful attempt
+        // Rule 8: Allow the user to attempt login again after an unsuccessful attempt
         while (true) {
             System.out.print("Enter Username: ");
-            String loginUsername = scanner.nextLine().trim();
+            String inputUsername = scanner.nextLine().trim();
 
             System.out.print("Enter Password: ");
-            String loginPassword = scanner.nextLine();
+            String inputPassword = scanner.nextLine();
 
-            // Check if fields are empty
-            if (loginUsername.isEmpty() || loginPassword.isEmpty()) {
-                System.out.println("\n[X] Login Failed: Username and Password cannot be empty.");
+            // Validate that login fields are not empty
+            if (inputUsername.isEmpty() || inputPassword.isEmpty()) {
+                System.out.println("\n[X] Login Failed: Username and password cannot be empty.");
             } else {
-                // Rule 6: Authenticate against registered credentials
-                User authenticatedUser = authenticate(loginUsername, loginPassword);
+                // Rule 6: Authenticate credentials against registered users
+                int userIndex = findUserIndexByCredentials(inputUsername, inputPassword);
 
-                if (authenticatedUser != null) {
+                if (userIndex != -1) {
                     // Rule 7: Clear message for successful login
                     System.out.println("\n[✔] Login Successful!");
-                    System.out.println("    Welcome back, " + authenticatedUser.getFullName() + "!");
-                    System.out.println("    Email: " + authenticatedUser.getEmail());
-                    System.out.println("    Status: Authenticated successfully.");
-                    break; // Exit login loop on successful login
+                    System.out.println("    Welcome back, " + fullNames[userIndex] + "!");
+                    System.out.println("    Email Address: " + emails[userIndex]);
+                    System.out.println("    Account Status: Authenticated.");
+                    break; // Exit login loop on success
                 } else {
                     // Rule 7: Clear message for failed login attempts
                     System.out.println("\n[X] Login Failed: Invalid username or password.");
@@ -269,21 +244,21 @@ public class UserRegistrationLoginSystem {
     }
 
     /**
-     * Authenticates credentials against registered users.
+     * Verifies username and password against registered users.
      * Uses String equals() method for precise match.
      * 
      * @param username The username entered
      * @param password The password entered
-     * @return User object if credentials match; null otherwise.
+     * @return index of matching user if authenticated; -1 if invalid credentials.
      */
-    private static User authenticate(String username, String password) {
-        for (int i = 0; i < userCount; i++) {
-            // Constraint: String equals() method used for exact credentials comparison
-            if (users[i].getUsername().equals(username) && users[i].getPassword().equals(password)) {
-                return users[i];
+    private static int findUserIndexByCredentials(String username, String password) {
+        for (int i = 0; i < registeredCount; i++) {
+            // Programming Constraint: equals() method used to verify credentials
+            if (usernames[i].equals(username) && passwords[i].equals(password)) {
+                return i;
             }
         }
-        return null;
+        return -1;
     }
 
     // ========================================================================
@@ -291,14 +266,14 @@ public class UserRegistrationLoginSystem {
     // ========================================================================
 
     /**
-     * Validates the username according to:
+     * Validates username according to:
      * - Rule 1: Must contain at least 5 characters and must not contain spaces.
      * - Rule 4: Must not be empty.
      * 
      * @param username The username to validate
-     * @return true if valid, false otherwise with an error message printed.
+     * @return true if valid; false with error message otherwise.
      */
-    public static boolean isValidUsername(String username) {
+    public static boolean validateUsername(String username) {
         // Rule 4: isEmpty() method check
         if (username.isEmpty()) {
             System.out.println("[X] Validation Error: Username cannot be left empty.");
@@ -307,14 +282,14 @@ public class UserRegistrationLoginSystem {
 
         // Rule 1: length() constraint (at least 5 characters)
         if (username.length() < 5) {
-            System.out.println("[X] Validation Error: Username must be at least 5 characters long (Entered: " 
-                               + username.length() + " characters).");
+            System.out.println("[X] Validation Error: Username must contain at least 5 characters (Entered: " 
+                               + username.length() + ").");
             return false;
         }
 
         // Rule 1: contains() constraint (must not contain spaces)
         if (username.contains(" ")) {
-            System.out.println("[X] Validation Error: Username must not contain any spaces.");
+            System.out.println("[X] Validation Error: Username must not contain spaces.");
             return false;
         }
 
@@ -322,14 +297,14 @@ public class UserRegistrationLoginSystem {
     }
 
     /**
-     * Validates the email address according to:
+     * Validates email according to:
      * - Rule 2: Must contain '@' and a period ('.') after '@'.
      * - Rule 4: Must not be empty.
      * 
      * @param email The email to validate
-     * @return true if valid, false otherwise with an error message printed.
+     * @return true if valid; false with error message otherwise.
      */
-    public static boolean isValidEmail(String email) {
+    public static boolean validateEmail(String email) {
         // Rule 4: isEmpty() check
         if (email.isEmpty()) {
             System.out.println("[X] Validation Error: Email address cannot be left empty.");
@@ -338,20 +313,20 @@ public class UserRegistrationLoginSystem {
 
         // Rule 2: contains() check for '@'
         if (!email.contains("@")) {
-            System.out.println("[X] Validation Error: Email address must contain the '@' character.");
+            System.out.println("[X] Validation Error: Email address must contain '@'.");
             return false;
         }
 
         // Rule 2: indexOf() check for period '.' after '@'
         int atIndex = email.indexOf('@');
-        
-        // Ensure '@' is not the very first character
+
+        // '@' should not be the first character
         if (atIndex == 0) {
-            System.out.println("[X] Validation Error: Email cannot start with '@'.");
+            System.out.println("[X] Validation Error: Email address cannot start with '@'.");
             return false;
         }
 
-        // Look for the period '.' occurring AFTER the '@'
+        // Look for '.' after '@'
         int dotAfterAtIndex = email.indexOf('.', atIndex);
 
         if (dotAfterAtIndex == -1) {
@@ -359,15 +334,15 @@ public class UserRegistrationLoginSystem {
             return false;
         }
 
-        // Period must not be immediately following '@' (e.g. "user@.com" is invalid)
+        // Period cannot be immediately next to '@' (e.g. user@.com)
         if (dotAfterAtIndex == atIndex + 1) {
-            System.out.println("[X] Validation Error: Email domain name cannot start with a period ('.') right after '@'.");
+            System.out.println("[X] Validation Error: Email domain cannot start with a period ('.') immediately after '@'.");
             return false;
         }
 
-        // Period must not be the last character (e.g. "user@domain." is invalid)
+        // Period cannot be the last character (e.g. user@domain.)
         if (dotAfterAtIndex == email.length() - 1) {
-            System.out.println("[X] Validation Error: Email cannot end with a period ('.').");
+            System.out.println("[X] Validation Error: Email address cannot end with a period ('.').");
             return false;
         }
 
@@ -375,15 +350,15 @@ public class UserRegistrationLoginSystem {
     }
 
     /**
-     * Validates the password according to:
-     * - Rule 3: At least 8 characters long, contains at least one uppercase letter,
-     *           at least one lowercase letter, at least one digit, and at least one special character.
+     * Validates password according to:
+     * - Rule 3: Must be at least 8 characters long, contain at least one uppercase letter,
+     *           one lowercase letter, one digit, and one special character.
      * - Rule 4: Must not be empty.
      * 
      * @param password The password to validate
-     * @return true if valid, false otherwise with detailed error messages.
+     * @return true if valid; false with specific error message otherwise.
      */
-    public static boolean isValidPassword(String password) {
+    public static boolean validatePassword(String password) {
         // Rule 4: isEmpty() check
         if (password.isEmpty()) {
             System.out.println("[X] Validation Error: Password cannot be left empty.");
@@ -393,37 +368,37 @@ public class UserRegistrationLoginSystem {
         // Rule 3: length() check (at least 8 characters)
         if (password.length() < 8) {
             System.out.println("[X] Validation Error: Password must be at least 8 characters long (Entered: " 
-                               + password.length() + " characters).");
+                               + password.length() + ").");
             return false;
         }
 
-        boolean hasUppercase = false;
-        boolean hasLowercase = false;
+        boolean hasUpper = false;
+        boolean hasLower = false;
         boolean hasDigit = false;
-        boolean hasSpecialChar = false;
+        boolean hasSpecial = false;
 
-        // Character-checking methods used in a loop across password characters
+        // Loop through characters using Character checking methods
         for (int i = 0; i < password.length(); i++) {
             char ch = password.charAt(i);
 
             if (Character.isUpperCase(ch)) {
-                hasUppercase = true;
+                hasUpper = true;
             } else if (Character.isLowerCase(ch)) {
-                hasLowercase = true;
+                hasLower = true;
             } else if (Character.isDigit(ch)) {
                 hasDigit = true;
             } else if (!Character.isWhitespace(ch)) {
-                // Any non-alphanumeric and non-space symbol qualifies as a special character
-                hasSpecialChar = true;
+                // Non-alphanumeric and non-whitespace character is a special character
+                hasSpecial = true;
             }
         }
 
-        // Report specific missing requirements for maximum clarity (Rule 7)
-        if (!hasUppercase) {
+        // Display clear, specific validation feedback (Rule 7)
+        if (!hasUpper) {
             System.out.println("[X] Validation Error: Password must contain at least one uppercase letter (A-Z).");
             return false;
         }
-        if (!hasLowercase) {
+        if (!hasLower) {
             System.out.println("[X] Validation Error: Password must contain at least one lowercase letter (a-z).");
             return false;
         }
@@ -431,7 +406,7 @@ public class UserRegistrationLoginSystem {
             System.out.println("[X] Validation Error: Password must contain at least one digit (0-9).");
             return false;
         }
-        if (!hasSpecialChar) {
+        if (!hasSpecial) {
             System.out.println("[X] Validation Error: Password must contain at least one special character (!@#$%^&* etc.).");
             return false;
         }
@@ -440,16 +415,16 @@ public class UserRegistrationLoginSystem {
     }
 
     /**
-     * Checks whether a username has already been registered (Rule 5).
-     * Compares case-insensitively so "john" and "John" are treated as the same username.
+     * Checks if a username has already been registered (Rule 5).
+     * Compares case-insensitively using equalsIgnoreCase().
      * 
      * @param username The username to check
-     * @return true if already taken, false if available.
+     * @return true if username is already registered; false otherwise.
      */
-    public static boolean isUsernameTaken(String username) {
-        for (int i = 0; i < userCount; i++) {
-            // Using equalsIgnoreCase() so usernames are uniquely identified regardless of casing
-            if (users[i].getUsername().equalsIgnoreCase(username)) {
+    public static boolean isUsernameAlreadyTaken(String username) {
+        for (int i = 0; i < registeredCount; i++) {
+            // Check uniqueness across all currently registered users
+            if (usernames[i].equalsIgnoreCase(username)) {
                 return true;
             }
         }
